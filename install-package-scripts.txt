@@ -1,0 +1,40 @@
+#!/bin/bash
+
+echo "------Updated & EpelRelease------"
+sudo yum update -y
+sudo yum -y install yum-plugin-priorities
+sudo yum -y install epel-release
+sudo yum -y install centos-release-scl-rh centos-release-scl
+
+echo "------Installing Python3.9------"
+sudo yum install python3 -y
+sudo yum groupinstall "Development Tools" -y
+sudo yum install gcc openssl-devel bzip2-devel libffi-devel zlib-devel wget git -y
+cd
+sudo wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz
+tar xzf Python-3.9.6.tgz
+cd Python-3.9.6
+sudo ./configure --enable-optimizations
+make altinstall
+sudo cd
+sudo rm -rf Python-3.9.6.tgz
+
+echo "------Installing Docker------"
+sudo curl https://download.docker.com/linux/centos/docker-ce.repo -o /etc/yum.repos.d/docker-ce.repo
+sudo sed -i -e "s/enabled=1/enabled=0/g" /etc/yum.repos.d/docker-ce.repo
+sudo yum --enablerepo=docker-ce-stable -y install docker-ce
+sudo systemctl enable --now docker
+sudo rpm -q docker-ce
+echo "---Check Docker Version---"
+
+echo "------Installing Docker Compose------"
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+echo "---Check Packages Version"
+python3.9 -V
+git --version
+docker --version
+sudo docker-compose --version
+
